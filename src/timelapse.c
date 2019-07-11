@@ -113,7 +113,7 @@ static void timelapse_init(void *vptr) {
     CameraFile *cam_file = NULL;
     CameraFilePath camera_file_path;
     const char *image_data = NULL;
-    unsigned long data_size = NULL;
+    unsigned long data_size = 0;
     Image *image = NULL;
     ImageInfo *image_info = AcquireImageInfo();
     ExceptionInfo *exception = AcquireExceptionInfo();
@@ -160,7 +160,7 @@ static void timelapse_init(void *vptr) {
                                 } else {
                                     obs_enter_graphics();
                                     data->texture = gs_texture_create(data->width, data->height, GS_BGRA, 1,
-                                                                      &data->texture_data,
+                                                                      (const uint8_t **)&data->texture_data,
                                                                       GS_DYNAMIC);
                                     obs_leave_graphics();
                                     goto exit;
@@ -180,9 +180,6 @@ static void timelapse_init(void *vptr) {
     obs_leave_graphics();
 
     exit:
-    if(image_data){
-        free(image_data);
-    }
     if(image_info){
         DestroyImageInfo(image_info);
     }
@@ -419,7 +416,7 @@ static void timelapse_tick(void *vptr, float seconds) {
     CameraFilePath *path;
     CameraFile *cam_file = NULL;
     const char *image_data = NULL;
-    unsigned long data_size = NULL;
+    unsigned long data_size = 0;
     Image *image = NULL;
     ImageInfo *image_info = AcquireImageInfo();
     ExceptionInfo *exception = AcquireExceptionInfo();
@@ -478,9 +475,6 @@ static void timelapse_tick(void *vptr, float seconds) {
         pthread_mutex_unlock(&data->camera_mutex);
     }
 
-    if (image_data) {
-        free(image_data);
-    }
     if (image_info) {
         DestroyImageInfo(image_info);
     }
